@@ -117,6 +117,11 @@ fn test_parse_number_errors() {
         ("0.", "invalid number, pos 3"),
         ("1.", "invalid number, pos 3"),
         ("1.e1", "invalid number, pos 3"),
+        // Integers that fit neither u64 nor i64 return error in standard mode
+        ("18446744073709551616", "invalid number, pos 20"),
+        ("-9223372036854775809", "invalid number, pos 20"),
+        ("123456789012345678901234567890", "invalid number, pos 30"),
+        (r#"{"n": 18446744073709551616}"#, "invalid number, pos 26"),
     ]);
 }
 
