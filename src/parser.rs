@@ -642,6 +642,7 @@ impl<'a> Parser<'a> {
     /// Parsing strategy:
     /// 1. First try to parse as integer (i64/u64)
     /// 2. If it contains decimal point or exponent, parse as floating point (f64)
+    /// 3. An integer outside the i64/u64 range returns an error instead of being rounded to f64
     fn parse_standard_json_number(&mut self) -> Result<JsonAst<'a>> {
         let start_idx = self.idx;
 
@@ -695,6 +696,7 @@ impl<'a> Parser<'a> {
             } else if let Ok(v) = s.parse::<i64>() {
                 return Ok(JsonAst::Number(Number::Int64(v)));
             }
+            return Err(self.error(ParseErrorCode::InvalidNumberValue));
         }
 
         match fast_float2::parse(s) {
