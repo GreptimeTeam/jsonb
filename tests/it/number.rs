@@ -2164,6 +2164,10 @@ fn it_cmps_decimals() {
     }
 }
 
+fn is_out_of_range_integer(s: &str) -> bool {
+    !s.contains(['.', 'e', 'E']) && s.parse::<i64>().is_err() && s.parse::<u64>().is_err()
+}
+
 #[test]
 fn test_parse_decimal() {
     let tests = [
@@ -2249,6 +2253,13 @@ fn test_parse_decimal() {
     }
     // standard json
     for test in tests {
+        if is_out_of_range_integer(test) {
+            assert!(
+                parse_value_standard_mode(test.as_bytes()).is_err(),
+                "{test}"
+            );
+            continue;
+        }
         let v = parse_value_standard_mode(test.as_bytes()).unwrap();
         let s = OrderedFloat(v.as_f64().unwrap());
         let buf = v.to_vec();
@@ -2294,6 +2305,13 @@ fn test_parse_float() {
 
     // standard json
     for (expected, test) in tests {
+        if is_out_of_range_integer(test) {
+            assert!(
+                parse_value_standard_mode(test.as_bytes()).is_err(),
+                "{test}"
+            );
+            continue;
+        }
         let v = parse_value_standard_mode(test.as_bytes()).unwrap();
         let s = format!("{v}");
         let buf = v.to_vec();
